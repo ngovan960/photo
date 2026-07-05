@@ -1,0 +1,235 @@
+[
+  {
+    "code": "VN",
+    "name": "Việt Nam",
+    "nameEn": "Vietnam",
+    "region": "southeast_asia",
+    "documents": [
+      {
+        "id": "vn_cccd",
+        "name": "CCCD",
+        "widthMm": 30,
+        "heightMm": 40,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Không cười", "Nền trắng", "Không đeo kính"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      },
+      {
+        "id": "vn_passport",
+        "name": "Passport",
+        "widthMm": 35,
+        "heightMm": 45,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Không cười", "Nền trắng"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      },
+      {
+        "id": "vn_gplx",
+        "name": "Giấy phép lái xe",
+        "widthMm": 30,
+        "heightMm": 40,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Nền trắng"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      }
+    ]
+  },
+  {
+    "code": "JP",
+    "name": "Nhật Bản",
+    "nameEn": "Japan",
+    "region": "east_asia",
+    "documents": [
+      {
+        "id": "jp_passport",
+        "name": "Passport",
+        "widthMm": 30,
+        "heightMm": 40,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Không cười", "Không đeo kính", "Tóc không che tai"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      },
+      {
+        "id": "jp_visa",
+        "name": "Visa",
+        "widthMm": 40,
+        "heightMm": 30,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Không cười", "Nền trắng"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      },
+      {
+        "id": "jp_mynumber",
+        "name": "My Number Card",
+        "widthMm": 30,
+        "heightMm": 40,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Tóc không che tai"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      }
+    ]
+  },
+  {
+    "code": "KR",
+    "name": "Hàn Quốc",
+    "nameEn": "South Korea",
+    "region": "east_asia",
+    "documents": [
+      {
+        "id": "kr_passport",
+        "name": "Passport",
+        "widthMm": 35,
+        "heightMm": 45,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Không cười", "Nền trắng"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      },
+      {
+        "id": "kr_visa",
+        "name": "Visa",
+        "widthMm": 35,
+        "heightMm": 45,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Không cười"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      }
+    ]
+  },
+  {
+    "code": "US",
+    "name": "Hoa Kỳ",
+    "nameEn": "United States",
+    "region": "north_america",
+    "documents": [
+      {
+        "id": "us_passport",
+        "name": "Passport",
+        "widthMm": 51,
+        "heightMm": 51,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Neutral expression", "Không đeo kính", "Nền trắng"],
+        "faceRatio": {"min": 0.50, "max": 0.69, "minEye": 0.56, "maxEye": 0.69}
+      },
+      {
+        "id": "us_visa",
+        "name": "Visa",
+        "widthMm": 51,
+        "heightMm": 51,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Neutral expression", "Nền trắng"],
+        "faceRatio": {"min": 0.50, "max": 0.69, "minEye": 0.56, "maxEye": 0.69}
+      }
+    ]
+  },
+  {
+    "code": "CN",
+    "name": "Trung Quốc",
+    "nameEn": "China",
+    "region": "east_asia",
+    "documents": [
+      {
+        "id": "cn_passport",
+        "name": "Passport",
+        "widthMm": 33,
+        "heightMm": 48,
+        "allowedBackgrounds": ["white", "blue"],
+        "requirements": ["Nhìn thẳng", "Không cười", "Tóc không che tai"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      },
+      {
+        "id": "cn_visa",
+        "name": "Visa",
+        "widthMm": 33,
+        "heightMm": 48,
+        "allowedBackgrounds": ["white", "blue"],
+        "requirements": ["Nhìn thẳng", "Không cười"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      }
+    ]
+  },
+  {
+    "code": "TH",
+    "name": "Thái Lan",
+    "nameEn": "Thailand",
+    "region": "southeast_asia",
+    "documents": [
+      {
+        "id": "th_passport",
+        "name": "Passport",
+        "widthMm": 35,
+        "heightMm": 45,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Không cười", "Nền trắng"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      }
+    ]
+  },
+  {
+    "code": "GB",
+    "name": "Anh Quốc",
+    "nameEn": "United Kingdom",
+    "region": "europe",
+    "documents": [
+      {
+        "id": "gb_passport",
+        "name": "Passport",
+        "widthMm": 35,
+        "heightMm": 45,
+        "allowedBackgrounds": ["white", "cream"],
+        "requirements": ["Nhìn thẳng", "Expression tự nhiên", "Nền trắng"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      }
+    ]
+  },
+  {
+    "code": "AU",
+    "name": "Úc",
+    "nameEn": "Australia",
+    "region": "oceania",
+    "documents": [
+      {
+        "id": "au_passport",
+        "name": "Passport",
+        "widthMm": 35,
+        "heightMm": 45,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Expression tự nhiên", "Nền trắng"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      }
+    ]
+  },
+  {
+    "code": "IN",
+    "name": "Ấn Độ",
+    "nameEn": "India",
+    "region": "south_asia",
+    "documents": [
+      {
+        "id": "in_passport",
+        "name": "Passport",
+        "widthMm": 51,
+        "heightMm": 51,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Neutral expression", "Nền trắng"],
+        "faceRatio": {"min": 0.50, "max": 0.69, "minEye": 0.56, "maxEye": 0.69}
+      }
+    ]
+  },
+  {
+    "code": "SG",
+    "name": "Singapore",
+    "nameEn": "Singapore",
+    "region": "southeast_asia",
+    "documents": [
+      {
+        "id": "sg_passport",
+        "name": "Passport",
+        "widthMm": 35,
+        "heightMm": 45,
+        "allowedBackgrounds": ["white"],
+        "requirements": ["Nhìn thẳng", "Tóc không che tai", "Nền trắng"],
+        "faceRatio": {"min": 0.70, "max": 0.80, "minEye": 0.60, "maxEye": 0.70}
+      }
+    ]
+  }
+]
