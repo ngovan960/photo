@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:photo_id/core/theme/app_colors.dart';
 import 'package:photo_id/core/theme/app_typography.dart';
 import 'package:photo_id/core/theme/app_spacing.dart';
+import 'package:photo_id/core/theme/theme_provider.dart';
 import 'package:photo_id/features/subscription/presentation/providers/subscription_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -12,13 +13,15 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final subscriptionState = ref.watch(subscriptionProvider);
+    final themeMode = ref.watch(themeProvider);
+    final isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.gray50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           'Settings',
-          style: AppTypography.h2.copyWith(color: AppColors.gray900),
+          style: AppTypography.h2,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -36,6 +39,17 @@ class SettingsScreen extends ConsumerWidget {
               title: 'Ngôn ngữ',
               trailing: 'English',
               onTap: () {},
+            ),
+            _SettingsTile(
+              icon: isDark ? Icons.dark_mode : Icons.light_mode,
+              title: 'Giao diện',
+              trailingWidget: Switch(
+                value: isDark,
+                onChanged: (value) {
+                  ref.read(themeProvider.notifier).toggleTheme();
+                },
+                activeColor: AppColors.primary,
+              ),
             ),
             _SettingsTile(
               icon: Icons.notifications_outlined,
@@ -181,7 +195,7 @@ class _SettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.white,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: ListTile(
         leading: Icon(icon, color: AppColors.gray700),
         title: Text(title, style: AppTypography.bodyLarge),
