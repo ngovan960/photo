@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Photo Id</string>
+	<string>Photo ID</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -41,9 +41,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Photo ID needs camera access to take passport and ID photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo ID needs photo library access to import and save photos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Photo ID needs permission to save photos to your library.</string>
 </dict>
 </plist>
