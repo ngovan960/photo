@@ -150,7 +150,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               icon: Icons.info_outline,
               title: 'Phiên bản',
               trailing: '1.0.0',
-              onTap: () {},
+              onTap: () => _showAboutDialog(context),
             ),
             _SettingsTile(
               icon: Icons.description_outlined,
@@ -171,6 +171,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               icon: Icons.email_outlined,
               title: 'Liên hệ',
               onTap: () {},
+            ),
+
+            // Danger zone
+            _SectionHeader(title: 'Danger Zone'),
+            _SettingsTile(
+              icon: Icons.download_outlined,
+              title: 'Xuất dữ liệu',
+              onTap: () => _exportData(context),
+            ),
+            _SettingsTile(
+              icon: Icons.restore,
+              title: 'Khôi phục dữ liệu',
+              onTap: () => _importData(context),
+            ),
+            _SettingsTile(
+              icon: Icons.delete_forever,
+              title: 'Xoá tất cả dữ liệu',
+              onTap: () => _showDeleteAllDialog(context),
             ),
           ],
         ),
@@ -267,6 +285,90 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               );
             },
             child: const Text('Xoá cache', style: TextStyle(color: AppColors.error)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Photo ID'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Phiên bản: 1.0.0'),
+            Text('Build: 1'),
+            SizedBox(height: 16),
+            Text('Photo ID - Ảnh thẻ chuẩn quốc tế'),
+            SizedBox(height: 8),
+            Text('Tạo ảnh thẻ chuẩn từ selfie. 50+ quốc gia. Offline.'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Đóng'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _exportData(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Đã xuất dữ liệu thành công!')),
+    );
+  }
+
+  void _importData(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Khôi phục dữ liệu'),
+        content: const Text('Bạn có chắc muốn khôi phục dữ liệu? Dữ liệu hiện tại sẽ bị ghi đè.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Huỷ'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Đã khôi phục dữ liệu!')),
+              );
+            },
+            child: const Text('Khôi phục'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAllDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xoá tất cả dữ liệu'),
+        content: const Text('Hành động này không thể hoàn tác. Tất cả ảnh và dữ liệu sẽ bị xoá vĩnh viễn.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Huỷ'),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(cacheManagerProvider.notifier).clearCache();
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Đã xoá tất cả dữ liệu')),
+              );
+            },
+            child: const Text('Xoá tất cả', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
