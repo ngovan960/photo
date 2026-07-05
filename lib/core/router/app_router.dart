@@ -13,6 +13,7 @@ import 'package:photo_id/features/history/presentation/screens/photo_detail_scre
 import 'package:photo_id/features/subscription/presentation/screens/paywall_screen.dart';
 import 'package:photo_id/features/settings/presentation/screens/settings_screen.dart';
 import 'package:photo_id/features/settings/presentation/screens/photo_check_screen.dart';
+import 'package:photo_id/features/profile/presentation/screens/profile_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -83,6 +84,10 @@ class AppRouter {
       GoRoute(
         path: '/check',
         builder: (context, state) => const PhotoCheckScreen(),
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const ProfileScreen(),
       ),
     ],
   );
