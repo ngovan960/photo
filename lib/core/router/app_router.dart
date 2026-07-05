@@ -14,6 +14,7 @@ import 'package:photo_id/features/subscription/presentation/screens/paywall_scre
 import 'package:photo_id/features/settings/presentation/screens/settings_screen.dart';
 import 'package:photo_id/features/settings/presentation/screens/photo_check_screen.dart';
 import 'package:photo_id/features/profile/presentation/screens/profile_screen.dart';
+import 'package:photo_id/features/gallery/presentation/screens/gallery_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -88,6 +89,10 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/gallery',
+        builder: (context, state) => const GalleryScreen(),
       ),
     ],
   );
