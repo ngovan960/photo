@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:photo_id/features/onboarding/presentation/screens/welcome_screen.dart';
 import 'package:photo_id/features/onboarding/presentation/screens/permissions_screen.dart';
@@ -11,6 +10,9 @@ import 'package:photo_id/features/editor/presentation/screens/editor_screen.dart
 import 'package:photo_id/features/export/presentation/screens/export_screen.dart';
 import 'package:photo_id/features/history/presentation/screens/history_screen.dart';
 import 'package:photo_id/features/history/presentation/screens/photo_detail_screen.dart';
+import 'package:photo_id/features/subscription/presentation/screens/paywall_screen.dart';
+import 'package:photo_id/features/settings/presentation/screens/settings_screen.dart';
+import 'package:photo_id/features/settings/presentation/screens/photo_check_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -72,9 +74,15 @@ class AppRouter {
       ),
       GoRoute(
         path: '/settings',
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Settings')),
-        ),
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/paywall',
+        builder: (context, state) => const PaywallScreen(),
+      ),
+      GoRoute(
+        path: '/check',
+        builder: (context, state) => const PhotoCheckScreen(),
       ),
     ],
   );
