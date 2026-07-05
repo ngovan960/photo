@@ -6,23 +6,43 @@ import 'package:photo_id/core/theme/app_typography.dart';
 import 'package:photo_id/core/theme/app_spacing.dart';
 import 'package:photo_id/core/theme/theme_provider.dart';
 import 'package:photo_id/features/subscription/presentation/providers/subscription_provider.dart';
+import 'package:photo_id/core/cache/cache_manager.dart';
 
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  String _selectedLanguage = 'English';
+  String _autoDeleteDays = '7 ngày';
+  bool _notifications = true;
+  bool _biometricLock = false;
+  bool _analytics = true;
+  bool _crashReports = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load cache info
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(cacheManagerProvider.notifier).loadCacheInfo();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final subscriptionState = ref.watch(subscriptionProvider);
     final themeMode = ref.watch(themeProvider);
+    final cacheState = ref.watch(cacheManagerProvider);
     final isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(
-          'Settings',
-          style: AppTypography.h2,
-        ),
+        title: Text('Settings', style: AppTypography.h2),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -37,17 +57,15 @@ class SettingsScreen extends ConsumerWidget {
             _SettingsTile(
               icon: Icons.language,
               title: 'Ngôn ngữ',
-              trailing: 'English',
-              onTap: () {},
+              trailing: _selectedLanguage,
+              onTap: () => _showLanguagePicker(context),
             ),
             _SettingsTile(
               icon: isDark ? Icons.dark_mode : Icons.light_mode,
               title: 'Giao diện',
               trailingWidget: Switch(
                 value: isDark,
-                onChanged: (value) {
-                  ref.read(themeProvider.notifier).toggleTheme();
-                },
+                onChanged: (value) => ref.read(themeProvider.notifier).toggleTheme(),
                 activeColor: AppColors.primary,
               ),
             ),
@@ -55,17 +73,17 @@ class SettingsScreen extends ConsumerWidget {
               icon: Icons.notifications_outlined,
               title: 'Thông báo',
               trailingWidget: Switch(
-                value: true,
-                onChanged: (value) {},
+                value: _notifications,
+                onChanged: (value) => setState(() => _notifications = value),
                 activeColor: AppColors.primary,
               ),
             ),
             _SettingsTile(
               icon: Icons.lock_outline,
-              title: 'Lock app',
+              title: 'Khóa app',
               trailingWidget: Switch(
-                value: false,
-                onChanged: (value) {},
+                value: _biometricLock,
+                onChanged: (value) => setState(() => _biometricLock = value),
                 activeColor: AppColors.primary,
               ),
             ),
@@ -74,15 +92,21 @@ class SettingsScreen extends ConsumerWidget {
             _SectionHeader(title: 'Ảnh'),
             _SettingsTile(
               icon: Icons.delete_outline,
-              title: 'Xoá ảnh gốc',
-              trailing: '7 ngày',
-              onTap: () {},
+              title: 'Tự xoá ảnh gốc',
+              trailing: _autoDeleteDays,
+              onTap: () => _showAutoDeletePicker(context),
             ),
             _SettingsTile(
               icon: Icons.folder_outlined,
               title: 'Album mặc định',
               trailing: 'Photo ID',
               onTap: () {},
+            ),
+            _SettingsTile(
+              icon: Icons.storage_outlined,
+              title: 'Dung lượng cache',
+              trailing: cacheState.cacheSizeFormatted,
+              onTap: () => _showCacheDialog(context),
             ),
 
             // Privacy section
@@ -91,8 +115,8 @@ class SettingsScreen extends ConsumerWidget {
               icon: Icons.analytics_outlined,
               title: 'Analytics',
               trailingWidget: Switch(
-                value: true,
-                onChanged: (value) {},
+                value: _analytics,
+                onChanged: (value) => setState(() => _analytics = value),
                 activeColor: AppColors.primary,
               ),
             ),
@@ -100,8 +124,8 @@ class SettingsScreen extends ConsumerWidget {
               icon: Icons.bug_report_outlined,
               title: 'Crash reports',
               trailingWidget: Switch(
-                value: true,
-                onChanged: (value) {},
+                value: _crashReports,
+                onChanged: (value) => setState(() => _crashReports = value),
                 activeColor: AppColors.primary,
               ),
             ),
@@ -150,6 +174,101 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showLanguagePicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(AppSpacing.base),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Chọn ngôn ngữ', style: AppTypography.h3),
+            const SizedBox(height: AppSpacing.base),
+            ...['English', 'Tiếng Việt', '日本語', '한국어', '中文'].map(
+              (lang) => ListTile(
+                title: Text(lang),
+                trailing: _selectedLanguage == lang
+                    ? const Icon(Icons.check, color: AppColors.primary)
+                    : null,
+                onTap: () {
+                  setState(() => _selectedLanguage = lang);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAutoDeletePicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(AppSpacing.base),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Tự xoá ảnh gốc', style: AppTypography.h3),
+            const SizedBox(height: AppSpacing.base),
+            ...['Tắt', '1 ngày', '7 ngày', '30 ngày'].map(
+              (option) => ListTile(
+                title: Text(option),
+                trailing: _autoDeleteDays == option
+                    ? const Icon(Icons.check, color: AppColors.primary)
+                    : null,
+                onTap: () {
+                  setState(() => _autoDeleteDays = option);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCacheDialog(BuildContext context) {
+    final cacheState = ref.read(cacheManagerProvider);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Dung lượng cache'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Dung lượng đã dùng: ${cacheState.cacheSizeFormatted}'),
+            Text('Số ảnh đã lưu: ${cacheState.photoCount}'),
+            const SizedBox(height: AppSpacing.base),
+            Text(
+              'Giới hạn: 100MB',
+              style: AppTypography.bodySmall.copyWith(color: AppColors.gray500),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Đóng'),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(cacheManagerProvider.notifier).clearCache();
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Đã xoá cache')),
+              );
+            },
+            child: const Text('Xoá cache', style: TextStyle(color: AppColors.error)),
+          ),
+        ],
       ),
     );
   }
