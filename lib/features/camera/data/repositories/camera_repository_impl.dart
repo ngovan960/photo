@@ -26,7 +26,9 @@ class CameraRepositoryImpl implements CameraRepository {
   @override
   Future<void> initialize() async {
     _cameras = await availableCameras();
-    if (_cameras.isEmpty) return;
+    if (_cameras.isEmpty) {
+      throw Exception('No cameras available');
+    }
 
     _controller = CameraController(
       _cameras[_currentCameraIndex],

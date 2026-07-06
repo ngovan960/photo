@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_id/features/camera/domain/models/face_detection_result.dart';
 import 'package:photo_id/features/camera/domain/repositories/camera_repository.dart';
@@ -26,6 +27,7 @@ class CameraState {
   final FaceDetectionResult? faceResult;
   final bool isCapturing;
   final String? error;
+  final CameraController? controller;
 
   const CameraState({
     this.isInitialized = false,
@@ -35,6 +37,7 @@ class CameraState {
     this.faceResult,
     this.isCapturing = false,
     this.error,
+    this.controller,
   });
 
   CameraState copyWith({
@@ -45,9 +48,11 @@ class CameraState {
     FaceDetectionResult? faceResult,
     bool? isCapturing,
     String? error,
+    CameraController? controller,
     bool clearPhoto = false,
     bool clearFace = false,
     bool clearError = false,
+    bool clearController = false,
   }) {
     return CameraState(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -57,6 +62,7 @@ class CameraState {
       faceResult: clearFace ? null : (faceResult ?? this.faceResult),
       isCapturing: isCapturing ?? this.isCapturing,
       error: clearError ? null : (error ?? this.error),
+      controller: clearController ? null : (controller ?? this.controller),
     );
   }
 }
@@ -70,9 +76,11 @@ class CameraNotifier extends StateNotifier<CameraState> {
   Future<void> initialize() async {
     try {
       await _repository.initialize();
+      final controller = (_repository as CameraRepositoryImpl).controller;
       state = state.copyWith(
         isInitialized: true,
         isFrontCamera: _repository.isFrontCamera,
+        controller: controller,
       );
     } catch (e) {
       state = state.copyWith(error: e.toString());
@@ -86,8 +94,10 @@ class CameraNotifier extends StateNotifier<CameraState> {
 
   Future<void> switchCamera() async {
     await _repository.switchCamera();
+    final controller = (_repository as CameraRepositoryImpl).controller;
     state = state.copyWith(
       isFrontCamera: _repository.isFrontCamera,
+      controller: controller,
     );
   }
 

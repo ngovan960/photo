@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:photo_id/core/theme/app_colors.dart';
@@ -101,20 +102,43 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       );
     }
 
+    if (state.error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: AppColors.error, size: 48),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              state.error!,
+              style: AppTypography.bodyMedium.copyWith(color: AppColors.white),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Camera preview would go here
-        // For now, show a placeholder
-        Container(
-          color: AppColors.gray800,
-          child: const Center(
-            child: Text(
-              'Camera Preview',
-              style: TextStyle(color: AppColors.white),
+        // Real camera preview
+        if (state.controller != null)
+          ClipRect(
+            child: OverflowBox(
+              alignment: Alignment.center,
+              child: state.controller!.value.isInitialized
+                  ? FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: state.controller!.value.previewSize!.height,
+                        height: state.controller!.value.previewSize!.width,
+                        child: CameraPreview(state.controller!),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
           ),
-        ),
         // Guide overlay
         const GuideOverlay(),
         // Face detection indicator
@@ -154,7 +178,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
           // Gallery button
           IconButton(
             icon: const Icon(Icons.photo_library, color: AppColors.white),
-            onPressed: () {},
+            onPressed: () => context.push('/gallery'),
           ),
           // Capture button
           CaptureButton(

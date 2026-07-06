@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:photo_id/core/theme/app_colors.dart';
 import 'package:photo_id/core/theme/app_typography.dart';
 import 'package:photo_id/core/theme/app_spacing.dart';
+import 'package:photo_id/core/widgets/app_card.dart';
 import 'package:photo_id/features/profile/presentation/providers/profile_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
