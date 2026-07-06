@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
 
   # State Management
   flutter_riverpod: ^2.5.0
@@ -51,6 +54,13 @@ dependencies:
 
   # UI
   flutter_svg: ^2.0.10+1
+
+  # Notifications
+  flutter_local_notifications: ^17.0.0
+  timezone: ^0.9.0
+  
+  # Security
+  local_auth: ^2.1.0
 
   # Utils
   uuid: ^4.4.0

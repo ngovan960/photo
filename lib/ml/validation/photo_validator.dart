@@ -1,6 +1,8 @@
 import 'dart:typed_data';
+import 'package:image/image.dart' as img;
 import 'package:photo_id/features/editor/domain/models/validation_result.dart';
 import 'package:photo_id/features/countries/domain/models/country_model.dart';
+import 'package:photo_id/ml/validation/image_processing_utils.dart';
 
 class PhotoValidator {
   ValidationResult validate({
@@ -13,6 +15,16 @@ class PhotoValidator {
     final errors = <String>[];
     final suggestions = <String>[];
 
+    // Decode image
+    final image = img.decodeImage(imageBytes);
+    if (image == null) {
+      return const ValidationResult(
+        score: 0,
+        errors: ['Không thể đọc ảnh'],
+        suggestions: ['Thử chọn ảnh khác'],
+      );
+    }
+
     // Check face size ratio
     final faceSizeOk = _validateFaceSize(faceRatio, documentSpec);
     if (!faceSizeOk) {
@@ -21,14 +33,14 @@ class PhotoValidator {
     }
 
     // Check background
-    final backgroundOk = _validateBackground(imageBytes, documentSpec);
+    final backgroundOk = _validateBackground(image, documentSpec);
     if (!backgroundOk) {
       errors.add('Nền không phù hợp');
       suggestions.add('Sử dụng nền ${documentSpec.allowedBackgrounds.first}');
     }
 
     // Check lighting
-    final lightingOk = _validateLighting(imageBytes);
+    final lightingOk = _validateLighting(image);
     if (!lightingOk) {
       errors.add('Ánh sáng không đủ');
       suggestions.add('Thử chụp nơi đủ sáng hơn');
@@ -42,14 +54,14 @@ class PhotoValidator {
     }
 
     // Check sharpness
-    final sharpnessOk = _validateSharpness(imageBytes);
+    final sharpnessOk = _validateSharpness(image);
     if (!sharpnessOk) {
       errors.add('Ảnh bị mờ');
       suggestions.add('Giữ stead khi chụp');
     }
 
     // Check shadows
-    final shadowFree = _validateShadow(imageBytes);
+    final shadowFree = _validateShadow(image);
     if (!shadowFree) {
       errors.add('Có bóng đổ');
       suggestions.add('Đứng cách tường 1m');
@@ -78,27 +90,32 @@ class PhotoValidator {
     return faceRatio >= spec.faceRatio.min && faceRatio <= spec.faceRatio.max;
   }
 
-  bool _validateLighting(Uint8List imageBytes) {
-    // Placeholder: check average brightness
-    // In production, analyze histogram
-    return true;
+  // Real implementation: Check average brightness
+  bool _validateLighting(img.Image image) {
+    final brightness = ImageProcessingUtils.calculateBrightness(image);
+    // Good range: 80-200 (0=black, 255=white)
+    return brightness >= 80 && brightness <= 200;
   }
 
-  bool _validateSharpness(Uint8List imageBytes) {
-    // Placeholder: check image sharpness
-    // In production, use Laplacian variance
-    return true;
+  // Real implementation: Check sharpness using Laplacian variance
+  bool _validateSharpness(img.Image image) {
+    final variance = ImageProcessingUtils.calculateSharpness(image);
+    // Higher variance = sharper image
+    // Threshold: > 100 is considered sharp
+    return variance > 100;
   }
 
-  bool _validateBackground(Uint8List imageBytes, Document spec) {
-    // Placeholder: check if background matches allowed colors
-    // In production, analyze dominant color in non-face region
-    return true;
+  // Real implementation: Check background color
+  bool _validateBackground(img.Image image, Document spec) {
+    final colorBuckets = ImageProcessingUtils.analyzeDominantColors(image);
+    return ImageProcessingUtils.isBackgroundAllowed(colorBuckets, spec.allowedBackgrounds);
   }
 
-  bool _validateShadow(Uint8List imageBytes) {
-    // Placeholder: check for shadows
-    // In production, detect edges in background
-    return true;
+  // Real implementation: Check shadow using left-right symmetry
+  bool _validateShadow(img.Image image) {
+    final symmetry = ImageProcessingUtils.calculateSymmetry(image);
+    // Low symmetry = shadows present
+    // Threshold: < 20 is acceptable
+    return symmetry < 20;
   }
 }

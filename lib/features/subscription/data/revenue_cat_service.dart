@@ -6,7 +6,7 @@ class RevenueCatService {
   static Future<void> init(String apiKey) async {
     if (_initialized) return;
 
-    await Purchases.setDebugLogsEnabled(true);
+    await Purchases.setLogLevel(LogLevel.debug);
 
     await Purchases.configure(
       PurchasesConfiguration(apiKey)

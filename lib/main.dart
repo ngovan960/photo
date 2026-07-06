@@ -6,7 +6,7 @@ import 'package:photo_id/core/theme/app_theme.dart';
 import 'package:photo_id/core/theme/theme_provider.dart';
 import 'package:photo_id/features/subscription/data/firebase_service.dart';
 import 'package:photo_id/features/subscription/data/revenue_cat_service.dart';
-import 'package:photo_id/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
