@@ -64,6 +64,11 @@ dependencies:
   
   # Security
   local_auth: ^2.1.0
+  encrypt: ^5.0.1
+  flutter_secure_storage: ^9.0.0
+
+  # PDF
+  pdf: ^3.10.0
 
   # Utils
   uuid: ^4.4.0
