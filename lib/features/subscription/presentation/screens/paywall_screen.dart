@@ -114,12 +114,14 @@ class PaywallScreen extends ConsumerWidget {
     );
   }
 
-  void _purchase(BuildContext context, WidgetRef ref, SubscriptionTier tier) {
-    ref.read(subscriptionProvider.notifier).upgradeToPro(tier);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Đã nâng cấp Pro!')),
-    );
-    context.go('/home');
+  void _purchase(BuildContext context, WidgetRef ref, SubscriptionTier tier) async {
+    final success = await ref.read(subscriptionProvider.notifier).purchase(tier);
+    if (success && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đã nâng cấp Pro!')),
+      );
+      context.go('/home');
+    }
   }
 }
 

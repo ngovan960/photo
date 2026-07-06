@@ -3,9 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_id/core/router/app_router.dart';
 import 'package:photo_id/core/theme/app_theme.dart';
 import 'package:photo_id/core/theme/theme_provider.dart';
+import 'package:photo_id/features/subscription/data/firebase_service.dart';
+import 'package:photo_id/features/subscription/data/revenue_cat_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await FirebaseService.init();
+
+  // Initialize RevenueCat
+  await RevenueCatService.init('YOUR_REVENUECAT_API_KEY');
+
   runApp(const ProviderScope(child: PhotoIdApp()));
 }
 
