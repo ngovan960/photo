@@ -28,11 +28,14 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(cameraProvider.notifier).initialize();
+      // Start realtime face detection
+      ref.read(cameraProvider.notifier).startFrameProcessing();
     });
   }
 
   @override
   void dispose() {
+    ref.read(cameraProvider.notifier).stopFrameProcessing();
     ref.read(cameraProvider.notifier).dispose();
     super.dispose();
   }

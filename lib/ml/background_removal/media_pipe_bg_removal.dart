@@ -2,40 +2,47 @@ import 'dart:typed_data';
 import 'package:image/image.dart' as img;
 import 'package:photo_id/features/editor/domain/models/background_color.dart';
 import 'package:photo_id/ml/tflite/tflite_service.dart';
+import 'package:photo_id/features/subscription/data/cloud_ai_service.dart';
 import 'background_removal_service.dart';
 
 class MediaPipeBackgroundRemovalService implements BackgroundRemovalService {
   @override
   Future<Uint8List> removeBackground(Uint8List imageBytes) async {
-    // Load model if not loaded
+    // Try local TFLite first
     await TFLiteService.loadModel();
-
-    // Run inference to get mask
     final mask = await TFLiteService.runInference(imageBytes);
 
-    if (mask == null) {
-      // Fallback: return original
-      return imageBytes;
+    if (mask != null) {
+      // Process with local mask
+      return _processMask(imageBytes, mask);
     }
 
-    // Apply mask to create transparent background
+    // Fallback to CloudAIService
+    final cloudResult = await CloudAIService.removeBackground(imageBytes);
+    if (cloudResult != null) {
+      return cloudResult;
+    }
+
+    // Final fallback: return original
+    return imageBytes;
+  }
+
+  // Process mask to create transparent background
+  Uint8List _processMask(Uint8List imageBytes, Uint8List mask) {
     final image = img.decodeImage(imageBytes);
     if (image == null) return imageBytes;
 
     final result = img.Image(width: image.width, height: image.height);
 
-    // Apply mask (simplified - in production, use proper alpha channel)
     for (int y = 0; y < image.height; y++) {
       for (int x = 0; x < image.width; x++) {
         final pixel = image.getPixel(x, y);
         final maskIndex = y * image.width + x;
         final maskValue = maskIndex < mask.length ? mask[maskIndex] : 255;
 
-        // If mask indicates foreground (high value), keep pixel
         if (maskValue > 128) {
           result.setPixelRgba(x, y, pixel.r.toInt(), pixel.g.toInt(), pixel.b.toInt(), 255);
         } else {
-          // Transparent background
           result.setPixelRgba(x, y, 0, 0, 0, 0);
         }
       }

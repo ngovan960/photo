@@ -136,8 +136,47 @@ class CameraNotifier extends StateNotifier<CameraState> {
     state = state.copyWith(clearPhoto: true, clearFace: true);
   }
 
+  // Start processing camera frames for realtime face detection
+  void startFrameProcessing() {
+    if (_repository is CameraRepositoryImpl) {
+      final controller = (_repository as CameraRepositoryImpl).controller;
+      if (controller == null) return;
+
+      controller.addListener(() {
+        if (controller.value.isInitialized && !state.isCapturing) {
+          // Process frame every 500ms for performance
+          _processFrame();
+        }
+      });
+    }
+  }
+
+  void _processFrame() async {
+    if (state.isCapturing) return;
+
+    try {
+      final photoBytes = await _repository.capturePhoto();
+      if (photoBytes == null) return;
+
+      final faceResult = await _repository.detectFace(photoBytes);
+      if (faceResult != null && faceResult != state.faceResult) {
+        state = state.copyWith(faceResult: faceResult);
+      }
+    } catch (e) {
+      // Silently fail for realtime processing
+    }
+  }
+
+  void stopFrameProcessing() {
+    if (_repository is CameraRepositoryImpl) {
+      final controller = (_repository as CameraRepositoryImpl).controller;
+      controller?.removeListener(() {});
+    }
+  }
+
   @override
   void dispose() {
+    stopFrameProcessing();
     _repository.dispose();
     super.dispose();
   }
