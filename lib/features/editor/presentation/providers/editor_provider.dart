@@ -35,12 +35,24 @@ class EditorState {
   final bool isProcessing;
   final String? error;
 
+  // Custom alignment and suit fields
+  final double rotationAngle;
+  final String selectedSuit; // 'none', 'men_classic', 'men_modern', 'women_classic', 'women_modern'
+  final double suitDx;
+  final double suitDy;
+  final double suitScale;
+
   const EditorState({
     this.photo,
     this.selectedBackground = BackgroundColor.white,
     this.validationResult,
     this.isProcessing = false,
     this.error,
+    this.rotationAngle = 0.0,
+    this.selectedSuit = 'none',
+    this.suitDx = 0.0,
+    this.suitDy = 0.0,
+    this.suitScale = 1.0,
   });
 
   EditorState copyWith({
@@ -49,6 +61,11 @@ class EditorState {
     ValidationResult? validationResult,
     bool? isProcessing,
     String? error,
+    double? rotationAngle,
+    String? selectedSuit,
+    double? suitDx,
+    double? suitDy,
+    double? suitScale,
     bool clearPhoto = false,
     bool clearValidation = false,
     bool clearError = false,
@@ -61,6 +78,11 @@ class EditorState {
           : (validationResult ?? this.validationResult),
       isProcessing: isProcessing ?? this.isProcessing,
       error: clearError ? null : (error ?? this.error),
+      rotationAngle: rotationAngle ?? this.rotationAngle,
+      selectedSuit: selectedSuit ?? this.selectedSuit,
+      suitDx: suitDx ?? this.suitDx,
+      suitDy: suitDy ?? this.suitDy,
+      suitScale: suitScale ?? this.suitScale,
     );
   }
 }
@@ -79,7 +101,43 @@ class EditorNotifier extends StateNotifier<EditorState> {
       createdAt: DateTime.now(),
       originalBytes: imageBytes,
     );
-    state = state.copyWith(photo: photo, clearError: true);
+    state = state.copyWith(
+      photo: photo,
+      rotationAngle: 0.0,
+      selectedSuit: 'none',
+      suitDx: 0.0,
+      suitDy: 0.0,
+      suitScale: 1.0,
+      clearError: true,
+    );
+  }
+
+  void setRotationAngle(double angle) {
+    state = state.copyWith(rotationAngle: angle);
+  }
+
+  void selectSuit(String suit) {
+    state = state.copyWith(
+      selectedSuit: suit,
+      suitDx: 0.0,
+      suitDy: 0.0,
+      suitScale: 1.0,
+    );
+  }
+
+  void updateSuitPosition(double dx, double dy) {
+    state = state.copyWith(suitDx: dx, suitDy: dy);
+  }
+
+  void updateSuitScale(double scale) {
+    state = state.copyWith(suitScale: scale);
+  }
+
+  void setProcessedBytes(Uint8List bytes) {
+    if (state.photo == null) return;
+    state = state.copyWith(
+      photo: state.photo!.copyWith(processedBytes: bytes),
+    );
   }
 
   Future<void> removeBackground() async {

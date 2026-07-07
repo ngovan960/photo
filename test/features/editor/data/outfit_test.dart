@@ -51,10 +51,10 @@ void main() {
 
     test('should get template by id', () async {
       await OutfitLibraryService.loadTemplates();
-      final template = OutfitLibraryService.getTemplateById('male_formal_1');
+      final template = OutfitLibraryService.getTemplateById('vest_male');
 
       expect(template, isNotNull);
-      expect(template!.id, 'male_formal_1');
+      expect(template!.id, 'vest_male');
     });
 
     test('should return null for non-existent id', () async {

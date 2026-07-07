@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:photo_id/features/onboarding/presentation/screens/welcome_screen.dart';
 import 'package:photo_id/features/onboarding/presentation/screens/permissions_screen.dart';
@@ -17,7 +18,10 @@ import 'package:photo_id/features/profile/presentation/screens/profile_screen.da
 import 'package:photo_id/features/gallery/presentation/screens/gallery_screen.dart';
 
 class AppRouter {
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   static final router = GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: '/',
     routes: [
       GoRoute(

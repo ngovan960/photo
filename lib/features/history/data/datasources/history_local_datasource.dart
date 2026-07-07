@@ -3,10 +3,11 @@ import 'package:photo_id/features/history/data/models/photo_record.dart';
 
 class HistoryLocalDataSource {
   static const String _boxName = 'photos';
-  late Box _box;
+
+  Box get _box => Hive.box(_boxName);
 
   Future<void> init() async {
-    _box = await Hive.openBox(_boxName);
+    // Box is pre-opened in main.dart
   }
 
   Future<void> savePhoto(PhotoRecord photo) async {

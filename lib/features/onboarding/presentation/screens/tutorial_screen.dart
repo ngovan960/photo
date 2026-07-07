@@ -37,8 +37,11 @@ class _TutorialScreenState extends State<TutorialScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.screenPadding),
@@ -51,9 +54,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                   onPressed: () => context.go('/home'),
                   child: Text(
                     'Bỏ qua',
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: AppColors.gray500,
-                    ),
+                    style: AppTypography.bodyMedium,
                   ),
                 ),
               ),
@@ -67,31 +68,30 @@ class _TutorialScreenState extends State<TutorialScreen> {
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: AppColors.primarySurface,
+                        color: isDark ? AppDarkColors.surface : AppColors.primarySurface,
                         borderRadius: BorderRadius.circular(AppBorderRadius.xl),
+                        border: Border.all(
+                          color: isDark ? AppDarkColors.border : Colors.transparent,
+                        ),
                       ),
                       child: Icon(
                         _pages[_currentPage].icon,
                         size: 60,
-                        color: AppColors.primary,
+                        color: isDark ? AppColors.primaryLight : AppColors.primary,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     // Title
                     Text(
                       _pages[_currentPage].title,
-                      style: AppTypography.h1.copyWith(
-                        color: AppColors.gray900,
-                      ),
+                      style: AppTypography.h1,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: AppSpacing.base),
                     // Description
                     Text(
                       _pages[_currentPage].description,
-                      style: AppTypography.bodyLarge.copyWith(
-                        color: AppColors.gray600,
-                      ),
+                      style: AppTypography.bodyLarge,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -128,7 +128,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                       shape: BoxShape.circle,
                       color: index == _currentPage
                           ? AppColors.primary
-                          : AppColors.gray300,
+                          : (isDark ? AppDarkColors.border : AppColors.gray300),
                     ),
                   ),
                 ),

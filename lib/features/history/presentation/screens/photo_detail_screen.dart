@@ -37,11 +37,11 @@ class PhotoDetailScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           '${photo.countryCode.toUpperCase()} - ${photo.documentId.split('_').last.toUpperCase()}',
-          style: AppTypography.h2.copyWith(color: AppColors.gray900),
+          style: AppTypography.h2,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -67,7 +67,11 @@ class PhotoDetailScreen extends ConsumerWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppBorderRadius.md),
-                border: Border.all(color: AppColors.gray200),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppDarkColors.border
+                      : AppColors.gray200,
+                ),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppBorderRadius.md),
@@ -77,8 +81,16 @@ class PhotoDetailScreen extends ConsumerWidget {
                         ? Image.memory(photo.originalBytes!)
                         : Container(
                             height: 300,
-                            color: AppColors.gray100,
-                            child: const Icon(Icons.photo, size: 64, color: AppColors.gray400),
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppDarkColors.surface
+                                : AppColors.gray100,
+                            child: Icon(
+                              Icons.photo,
+                              size: 64,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? AppDarkColors.textSecondary
+                                  : AppColors.gray400,
+                            ),
                           ),
               ),
             ),
@@ -169,7 +181,10 @@ class _InfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Text('$label: ', style: AppTypography.bodyMedium.copyWith(color: AppColors.gray600)),
+          Text(
+            '$label: ',
+            style: AppTypography.bodyMedium,
+          ),
           Text(value, style: AppTypography.bodyMedium),
         ],
       ),

@@ -57,8 +57,8 @@ class TFLiteService {
     // 3. Run inference
     // 4. Postprocess mask
 
-    // Placeholder: return original image
-    return imageBytes;
+    // Placeholder: Return null to trigger fallback to CloudAIService
+    return null;
   }
 
   // Dispose resources

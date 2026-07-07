@@ -18,10 +18,10 @@ class AppSpacing {
 class AppBorderRadius {
   static const double none = 0;
   static const double xs = 4;
-  static const double sm = 8;    // Stitch ROUND_EIGHT
-  static const double md = 8;    // Stitch ROUND_EIGHT
-  static const double lg = 8;    // Stitch ROUND_EIGHT
-  static const double xl = 16;
+  static const double sm = 8;    // Stitch ROUND_EIGHT (standard buttons, inputs)
+  static const double md = 12;   // Medium components (cards, lists)
+  static const double lg = 16;   // Large components (sheets, modals, banners)
+  static const double xl = 24;
   static const double full = 9999;
 }
 

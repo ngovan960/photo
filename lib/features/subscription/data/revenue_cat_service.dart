@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class RevenueCatService {
   static bool _initialized = false;
 
   static Future<void> init(String apiKey) async {
+    if (kIsWeb) return;
     if (_initialized) return;
 
     await Purchases.setLogLevel(LogLevel.debug);
@@ -17,6 +19,7 @@ class RevenueCatService {
   }
 
   static Future<bool> isPro() async {
+    if (kIsWeb) return false;
     try {
       final customerInfo = await Purchases.getCustomerInfo();
       return customerInfo.entitlements.active.containsKey('pro');
@@ -26,6 +29,7 @@ class RevenueCatService {
   }
 
   static Future<CustomerInfo?> getCustomerInfo() async {
+    if (kIsWeb) return null;
     try {
       return await Purchases.getCustomerInfo();
     } catch (e) {
@@ -34,6 +38,7 @@ class RevenueCatService {
   }
 
   static Future<List<Package>> getAvailablePackages() async {
+    if (kIsWeb) return [];
     try {
       final offerings = await Purchases.getOfferings();
       final current = offerings.current;
@@ -45,6 +50,7 @@ class RevenueCatService {
   }
 
   static Future<bool> purchasePackage(Package package) async {
+    if (kIsWeb) return false;
     try {
       final customerInfo = await Purchases.purchasePackage(package);
       return customerInfo.entitlements.active.containsKey('pro');
@@ -54,6 +60,7 @@ class RevenueCatService {
   }
 
   static Future<bool> restorePurchases() async {
+    if (kIsWeb) return false;
     try {
       final customerInfo = await Purchases.restorePurchases();
       return customerInfo.entitlements.active.containsKey('pro');
@@ -63,6 +70,7 @@ class RevenueCatService {
   }
 
   static Future<Map<String, dynamic>?> getSubscriptionInfo() async {
+    if (kIsWeb) return null;
     try {
       final customerInfo = await Purchases.getCustomerInfo();
       final entitlement = customerInfo.entitlements.active['pro'];
@@ -80,6 +88,7 @@ class RevenueCatService {
   }
 
   static Future<void> logout() async {
+    if (kIsWeb) return;
     await Purchases.logOut();
   }
 }

@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class PayPerExportService {
 
   static Future<bool> isAvailable() async {
+    if (kIsWeb) return false;
     try {
       final offerings = await Purchases.getOfferings();
       final current = offerings.current;
@@ -16,6 +18,7 @@ class PayPerExportService {
   }
 
   static Future<Package?> getPayPerExportPackage() async {
+    if (kIsWeb) return null;
     try {
       final offerings = await Purchases.getOfferings();
       final current = offerings.current;
@@ -36,6 +39,7 @@ class PayPerExportService {
   }
 
   static Future<bool> purchaseExport() async {
+    if (kIsWeb) return false;
     try {
       final package = await getPayPerExportPackage();
       if (package == null) return false;
@@ -48,6 +52,7 @@ class PayPerExportService {
   }
 
   static Future<int> getRemainingExports() async {
+    if (kIsWeb) return 0;
     try {
       final customerInfo = await Purchases.getCustomerInfo();
       final entitlement = customerInfo.entitlements.active['pay_per_export'];

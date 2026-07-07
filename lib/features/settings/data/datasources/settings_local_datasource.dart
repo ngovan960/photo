@@ -3,10 +3,11 @@ import 'package:photo_id/features/settings/data/models/settings_model.dart';
 
 class SettingsLocalDataSource {
   static const String _boxName = 'settings';
-  late Box _box;
+  
+  Box get _box => Hive.box(_boxName);
 
   Future<void> init() async {
-    _box = await Hive.openBox(_boxName);
+    // Box is pre-opened in main.dart
   }
 
   Future<void> saveSettings(SettingsModel settings) async {

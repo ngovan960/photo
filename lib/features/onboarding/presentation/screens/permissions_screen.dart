@@ -9,8 +9,11 @@ class PermissionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.screenPadding),
@@ -23,22 +26,23 @@ class PermissionsScreen extends StatelessWidget {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.primarySurface,
+                  color: isDark ? AppDarkColors.surface : AppColors.primarySurface,
                   borderRadius: BorderRadius.circular(AppBorderRadius.xl),
+                  border: Border.all(
+                    color: isDark ? AppDarkColors.border : Colors.transparent,
+                  ),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.camera_alt,
                   size: 40,
-                  color: AppColors.primary,
+                  color: isDark ? AppColors.primaryLight : AppColors.primary,
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
               // Title
               Text(
                 'Cần quyền truy cập Camera',
-                style: AppTypography.h1.copyWith(
-                  color: AppColors.gray900,
-                ),
+                style: AppTypography.h1,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.base),
@@ -47,9 +51,7 @@ class PermissionsScreen extends StatelessWidget {
                 'App cần camera để chụp ảnh thẻ.\n'
                 'Ảnh được xử lý 100% trên thiết bị,\n'
                 'không gửi lên server.',
-                style: AppTypography.bodyLarge.copyWith(
-                  color: AppColors.gray600,
-                ),
+                style: AppTypography.bodyLarge,
                 textAlign: TextAlign.center,
               ),
               const Spacer(),
@@ -76,9 +78,7 @@ class PermissionsScreen extends StatelessWidget {
               // Hint
               Text(
                 '💡 Bạn có thể thay đổi trong Settings sau',
-                style: AppTypography.caption.copyWith(
-                  color: AppColors.gray400,
-                ),
+                style: AppTypography.caption,
                 textAlign: TextAlign.center,
               ),
             ],

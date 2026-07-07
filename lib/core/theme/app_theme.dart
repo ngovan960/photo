@@ -20,7 +20,7 @@ class AppTheme {
       color: AppColors.white,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppBorderRadius.sm),
+        borderRadius: BorderRadius.circular(AppBorderRadius.md),
         side: const BorderSide(color: AppColors.gray200),
       ),
     ),
@@ -33,22 +33,28 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppBorderRadius.sm),
         ),
-        textStyle: AppTypography.labelLarge.copyWith(color: AppColors.white),
+        textStyle: AppTypography.labelLarge.copyWith(
+          color: AppColors.white,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primary,
-        side: const BorderSide(color: AppColors.primary),
+        side: const BorderSide(color: AppColors.primary, width: 1.5),
         minimumSize: const Size(double.infinity, 52),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppBorderRadius.sm),
+        ),
+        textStyle: AppTypography.labelLarge.copyWith(
+          fontWeight: FontWeight.w600,
         ),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.gray50,
+      fillColor: AppColors.white,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppBorderRadius.sm),
         borderSide: const BorderSide(color: AppColors.gray200),
@@ -74,8 +80,8 @@ class AppTheme {
     primaryColor: AppDarkColors.primary,
     scaffoldBackgroundColor: AppDarkColors.background,
     fontFamily: AppTypography.fontFamily,
-    appBarTheme: AppBarTheme(
-      backgroundColor: AppDarkColors.surface,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppDarkColors.background,
       foregroundColor: AppDarkColors.textPrimary,
       elevation: 0,
       centerTitle: true,
@@ -84,8 +90,8 @@ class AppTheme {
       color: AppDarkColors.surface,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppBorderRadius.sm),
-        side: BorderSide(color: AppDarkColors.border),
+        borderRadius: BorderRadius.circular(AppBorderRadius.md),
+        side: const BorderSide(color: AppDarkColors.border),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -97,29 +103,35 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppBorderRadius.sm),
         ),
-        textStyle: AppTypography.labelLarge.copyWith(color: AppDarkColors.background),
+        textStyle: AppTypography.labelLarge.copyWith(
+          color: AppDarkColors.background,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppDarkColors.primary,
-        side: BorderSide(color: AppDarkColors.primary),
+        side: const BorderSide(color: AppDarkColors.primary, width: 1.5),
         minimumSize: const Size(double.infinity, 52),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppBorderRadius.sm),
+        ),
+        textStyle: AppTypography.labelLarge.copyWith(
+          fontWeight: FontWeight.w600,
         ),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppDarkColors.surfaceVariant,
+      fillColor: AppDarkColors.surface,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppBorderRadius.sm),
-        borderSide: BorderSide(color: AppDarkColors.border),
+        borderSide: const BorderSide(color: AppDarkColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppBorderRadius.sm),
-        borderSide: BorderSide(color: AppDarkColors.border),
+        borderSide: const BorderSide(color: AppDarkColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppBorderRadius.sm),

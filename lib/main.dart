@@ -6,12 +6,29 @@ import 'package:photo_id/core/theme/app_theme.dart';
 import 'package:photo_id/core/theme/theme_provider.dart';
 import 'package:photo_id/features/subscription/data/firebase_service.dart';
 import 'package:photo_id/features/subscription/data/revenue_cat_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await FirebaseService.init();
+  // Initialize Hive
+  try {
+    await Hive.initFlutter();
+    await Hive.openBox('settings');
+    await Hive.openBox('photos');
+  } catch (e) {
+    debugPrint('Hive initialization failed: $e');
+  }
+
+  // Initialize Firebase (wrapped to prevent startup crash if files are missing)
+  try {
+    await FirebaseService.init();
+  } catch (e) {
+    debugPrint('Firebase initialization failed: $e. Running without Firebase.');
+  }
+
   await RevenueCatService.init('YOUR_REVENUECAT_API_KEY');
 
   runApp(const ProviderScope(child: PhotoIdApp()));

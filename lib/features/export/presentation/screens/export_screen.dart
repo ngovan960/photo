@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:photo_id/core/theme/app_colors.dart';
-import 'package:photo_id/core/theme/app_typography.dart';
-import 'package:photo_id/core/theme/app_spacing.dart';
+import 'package:photo_id/features/editor/presentation/providers/editor_provider.dart';
 
 enum ExportFormat { jpeg, png }
 enum ExportLayout { single, grid4, grid8 }
@@ -64,203 +63,445 @@ class ExportScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final exportState = ref.watch(exportProvider);
+    final editorState = ref.watch(editorProvider);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final backgroundColor = isDark ? const Color(0xFF131B2E) : const Color(0xFFFAF8FF);
+    final cardColor = isDark ? const Color(0xFF1D2438) : Colors.white;
+    final dividerColor = isDark ? const Color(0xFF333D55) : const Color(0xFFE2E7FF);
+
+    final photoBytes = editorState.photo?.processedBytes ?? editorState.photo?.originalBytes;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text(
-          'Xuất ảnh',
-          style: AppTypography.h2.copyWith(color: AppColors.gray900),
-        ),
+        backgroundColor: isDark ? const Color(0xFF131B2E) : const Color(0xFFFAF8FF),
+        elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          color: const Color(0xFF004AC6),
           onPressed: () => context.pop(),
         ),
+        title: Text(
+          'Export & Print',
+          style: TextStyle(
+            fontFamily: 'Hanken Grotesk',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : const Color(0xFF004AC6),
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            color: const Color(0xFF004AC6),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.screenPadding),
+        padding: const EdgeInsets.fromLTRB(20.0, 16.0, 20.0, 160.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Photo preview placeholder
-            Container(
-              height: 200,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.gray100,
-                borderRadius: BorderRadius.circular(AppBorderRadius.md),
-                border: Border.all(color: AppColors.gray200),
-              ),
-              child: const Center(
-                child: Icon(Icons.photo, size: 64, color: AppColors.gray400),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-
-            // Format picker
-            Text('Định dạng', style: AppTypography.labelLarge),
-            const SizedBox(height: AppSpacing.sm),
-            Row(
-              children: ExportFormat.values.map((format) {
-                final isSelected = exportState.format == format;
-                return Padding(
-                  padding: const EdgeInsets.only(right: AppSpacing.sm),
-                  child: ChoiceChip(
-                    label: Text(format == ExportFormat.jpeg ? 'JPEG' : 'PNG'),
-                    selected: isSelected,
-                    onSelected: (_) => ref.read(exportProvider.notifier).setFormat(format),
-                    selectedColor: AppColors.primarySurface,
-                    labelStyle: AppTypography.labelMedium.copyWith(
-                      color: isSelected ? AppColors.primary : AppColors.gray700,
+            // 1. Photo Preview Area with Layout overlays
+            Center(
+              child: Container(
+                width: double.infinity,
+                constraints: const BoxConstraints(maxWidth: 320),
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: dividerColor.withOpacity(0.5)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: AspectRatio(
+                    aspectRatio: 3 / 4,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        if (photoBytes != null) ...[
+                          if (exportState.layout == ExportLayout.single)
+                            Image.memory(
+                              photoBytes,
+                              fit: BoxFit.cover,
+                            )
+                          else if (exportState.layout == ExportLayout.grid4)
+                            GridView.count(
+                              crossAxisCount: 2,
+                              padding: const EdgeInsets.all(8),
+                              crossAxisSpacing: 6,
+                              mainAxisSpacing: 6,
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: List.generate(
+                                4,
+                                (index) => ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: Image.memory(photoBytes, fit: BoxFit.cover),
+                                ),
+                              ),
+                            )
+                          else if (exportState.layout == ExportLayout.grid8)
+                            GridView.count(
+                              crossAxisCount: 2,
+                              padding: const EdgeInsets.all(8),
+                              crossAxisSpacing: 4,
+                              mainAxisSpacing: 4,
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: List.generate(
+                                8,
+                                (index) => ClipRRect(
+                                  borderRadius: BorderRadius.circular(2),
+                                  child: Image.memory(photoBytes, fit: BoxFit.cover),
+                                ),
+                              ),
+                            ),
+                        ] else
+                          Center(
+                            child: Icon(
+                              Icons.photo,
+                              size: 64,
+                              color: Colors.grey.shade300,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                );
-              }).toList(),
+                ),
+              ),
             ),
-            const SizedBox(height: AppSpacing.lg),
 
-            // Layout picker
-            Text('Layout', style: AppTypography.labelLarge),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: 28),
+
+            // 2. File Format Section
+            const Text(
+              'FILE FORMAT',
+              style: TextStyle(
+                fontFamily: 'Hanken Grotesk',
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1D2438) : const Color(0xFFF3F3F8),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => ref.read(exportProvider.notifier).setFormat(ExportFormat.jpeg),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: exportState.format == ExportFormat.jpeg
+                              ? (isDark ? const Color(0xFF004AC6) : Colors.white)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: exportState.format == ExportFormat.jpeg && !isDark
+                              ? [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  )
+                                ]
+                              : [],
+                        ),
+                        child: Text(
+                          'JPEG',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Hanken Grotesk',
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: exportState.format == ExportFormat.jpeg
+                                ? (isDark ? Colors.white : Colors.black)
+                                : Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => ref.read(exportProvider.notifier).setFormat(ExportFormat.png),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: exportState.format == ExportFormat.png
+                              ? (isDark ? const Color(0xFF004AC6) : Colors.white)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: exportState.format == ExportFormat.png && !isDark
+                              ? [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  )
+                                ]
+                              : [],
+                        ),
+                        child: Text(
+                          'PNG',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Hanken Grotesk',
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: exportState.format == ExportFormat.png
+                                ? (isDark ? Colors.white : Colors.black)
+                                : Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // 3. Layout Section
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _LayoutOption(
-                  icon: Icons.photo,
-                  label: 'Đơn',
-                  isSelected: exportState.layout == ExportLayout.single,
-                  onTap: () => ref.read(exportProvider.notifier).setLayout(ExportLayout.single),
+                const Text(
+                  'LAYOUT',
+                  style: TextStyle(
+                    fontFamily: 'Hanken Grotesk',
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                    color: Colors.grey,
+                  ),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                _LayoutOption(
-                  icon: Icons.grid_view,
-                  label: '4 bản',
-                  isSelected: exportState.layout == ExportLayout.grid4,
-                  onTap: () => ref.read(exportProvider.notifier).setLayout(ExportLayout.grid4),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                _LayoutOption(
-                  icon: Icons.grid_on,
-                  label: '8 bản',
-                  isSelected: exportState.layout == ExportLayout.grid8,
-                  onTap: () => ref.read(exportProvider.notifier).setLayout(ExportLayout.grid8),
+                Text(
+                  exportState.layout == ExportLayout.single
+                      ? 'Single'
+                      : exportState.layout == ExportLayout.grid4
+                          ? '4 Copies'
+                          : '8 Copies',
+                  style: const TextStyle(
+                    fontFamily: 'Hanken Grotesk',
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF004AC6),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: 10),
 
-            // Paper size picker
-            Text('Kích thước in', style: AppTypography.labelLarge),
-            const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
-                _PaperOption(
-                  label: '4x6',
-                  isSelected: exportState.paperSize == PaperSize.fourBySix,
-                  onTap: () => ref.read(exportProvider.notifier).setPaperSize(PaperSize.fourBySix),
+                _buildLayoutButton(
+                  context: context,
+                  ref: ref,
+                  targetLayout: ExportLayout.single,
+                  currentLayout: exportState.layout,
+                  title: 'Single',
+                  isDark: isDark,
+                  cardColor: cardColor,
+                  icon: const Icon(Icons.crop_original, size: 28, color: Colors.grey),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                _PaperOption(
-                  label: 'A4',
-                  isSelected: exportState.paperSize == PaperSize.a4,
-                  onTap: () => ref.read(exportProvider.notifier).setPaperSize(PaperSize.a4),
+                const SizedBox(width: 12),
+                _buildLayoutButton(
+                  context: context,
+                  ref: ref,
+                  targetLayout: ExportLayout.grid4,
+                  currentLayout: exportState.layout,
+                  title: '4 Copies',
+                  isDark: isDark,
+                  cardColor: cardColor,
+                  icon: const Icon(Icons.grid_view, size: 28, color: Colors.grey),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                _PaperOption(
-                  label: 'A5',
-                  isSelected: exportState.paperSize == PaperSize.a5,
-                  onTap: () => ref.read(exportProvider.notifier).setPaperSize(PaperSize.a5),
+                const SizedBox(width: 12),
+                _buildLayoutButton(
+                  context: context,
+                  ref: ref,
+                  targetLayout: ExportLayout.grid8,
+                  currentLayout: exportState.layout,
+                  title: '8 Copies',
+                  isDark: isDark,
+                  cardColor: cardColor,
+                  icon: const Icon(Icons.grid_on, size: 28, color: Colors.grey),
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.xl),
 
-            // Action buttons
+            const SizedBox(height: 24),
+
+            // 4. Paper Size Section
+            const Text(
+              'PAPER SIZE',
+              style: TextStyle(
+                fontFamily: 'Hanken Grotesk',
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 10),
             Row(
               children: [
-                Expanded(
-                  child: _ActionButton(
-                    icon: Icons.save,
-                    label: 'Lưu',
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Đã lưu ảnh!')),
-                      );
-                      context.go('/home');
-                    },
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: _ActionButton(
-                    icon: Icons.share,
-                    label: 'Chia sẻ',
-                    onTap: () {},
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: _ActionButton(
-                    icon: Icons.print,
-                    label: 'In',
-                    onTap: () {},
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: _ActionButton(
-                    icon: Icons.copy,
-                    label: 'Copy',
-                    onTap: () {},
-                  ),
-                ),
+                _buildPaperChip(ref, PaperSize.fourBySix, exportState.paperSize, '4x6"'),
+                const SizedBox(width: 8),
+                _buildPaperChip(ref, PaperSize.a4, exportState.paperSize, 'A4'),
+                const SizedBox(width: 8),
+                _buildPaperChip(ref, PaperSize.a5, exportState.paperSize, 'A5'),
               ],
             ),
           ],
         ),
       ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF131B2E) : Colors.white,
+          border: Border(
+            top: BorderSide(color: dividerColor.withOpacity(0.5)),
+          ),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Save button
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Saved to device successfully!')),
+                    );
+                    context.go('/home');
+                  },
+                  icon: const Icon(Icons.download, size: 20),
+                  label: const Text('Save to Device'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF004AC6),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                    textStyle: const TextStyle(
+                      fontFamily: 'Hanken Grotesk',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Share and Print buttons row
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: OutlinedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.share, size: 18),
+                        label: const Text('Share'),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: dividerColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          foregroundColor: isDark ? Colors.white : Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: OutlinedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.print, size: 18),
+                        label: const Text('Print'),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: dividerColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          foregroundColor: isDark ? Colors.white : Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
-}
 
-class _LayoutOption extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _LayoutOption({
-    required this.icon,
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildLayoutButton({
+    required BuildContext context,
+    required WidgetRef ref,
+    required ExportLayout targetLayout,
+    required ExportLayout currentLayout,
+    required String title,
+    required bool isDark,
+    required Color cardColor,
+    required Widget icon,
+  }) {
+    final isSelected = targetLayout == currentLayout;
     return Expanded(
       child: GestureDetector(
-        onTap: onTap,
+        onTap: () => ref.read(exportProvider.notifier).setLayout(targetLayout),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primarySurface : AppColors.gray50,
-            borderRadius: BorderRadius.circular(AppBorderRadius.sm),
+            color: isSelected
+                ? const Color(0xFF004AC6).withOpacity(0.08)
+                : cardColor,
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isSelected ? AppColors.primary : AppColors.gray200,
+              color: isSelected ? const Color(0xFF004AC6) : Colors.transparent,
+              width: 1.5,
             ),
           ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon,
-                color: isSelected ? AppColors.primary : AppColors.gray600,
-                size: 24,
-              ),
-              const SizedBox(height: 4),
+              icon,
+              const SizedBox(height: 8),
               Text(
-                label,
-                style: AppTypography.labelMedium.copyWith(
-                  color: isSelected ? AppColors.primary : AppColors.gray700,
+                title,
+                style: TextStyle(
+                  fontFamily: 'Hanken Grotesk',
+                  fontSize: 13,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected
+                      ? const Color(0xFF004AC6)
+                      : (isDark ? Colors.white70 : Colors.black87),
                 ),
               ),
             ],
@@ -269,79 +510,30 @@ class _LayoutOption extends StatelessWidget {
       ),
     );
   }
-}
 
-class _PaperOption extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _PaperOption({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.primarySurface : AppColors.gray50,
-            borderRadius: BorderRadius.circular(AppBorderRadius.sm),
-            border: Border.all(
-              color: isSelected ? AppColors.primary : AppColors.gray200,
-            ),
-          ),
-          child: Text(
-            label,
-            style: AppTypography.labelMedium.copyWith(
-              color: isSelected ? AppColors.primary : AppColors.gray700,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const _ActionButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildPaperChip(
+    WidgetRef ref,
+    PaperSize targetSize,
+    PaperSize currentSize,
+    String label,
+  ) {
+    final isSelected = targetSize == currentSize;
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => ref.read(exportProvider.notifier).setPaperSize(targetSize),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.gray50,
-          borderRadius: BorderRadius.circular(AppBorderRadius.sm),
-          border: Border.all(color: AppColors.gray200),
+          color: isSelected ? const Color(0xFF004AC6) : Colors.grey.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(20),
         ),
-        child: Column(
-          children: [
-            Icon(icon, color: AppColors.gray700, size: 24),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: AppTypography.labelSmall.copyWith(
-                color: AppColors.gray700,
-              ),
-            ),
-          ],
+        child: Text(
+          label,
+          style: TextStyle(
+            fontFamily: 'Hanken Grotesk',
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: isSelected ? Colors.white : Colors.grey.shade600,
+          ),
         ),
       ),
     );
